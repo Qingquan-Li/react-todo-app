@@ -1,18 +1,17 @@
 import { useState } from "react";
 
-import AddTodo from "./components/AddTodo";
-import TaskList from "./components/TaskList";
-
-let nextId = 0;
+let nextId = 3;
+const initialTodos = [
+  { id: 0, title: 'Learn React.js' },
+  { id: 1, title: 'Build a todo app' },
+  { id: 2, title: 'Deploy to gh-pages' },
+];
 
 export default function App() {
-  // Set the local variable nextId=0 here,
-  // the `id` in `setTodos()` will always be zero.
-  // let nextId = 0;
-  const [todos, setTodos] = useState([]);
 
-  // function handleAddTodo(title) {
-  const handleAddTodo = (title) => {
+  const [todos, setTodos] = useState(initialTodos);
+
+  function handleAddTodo(title) {
     // Replace the state with a new array
     setTodos([
       // Create a new array which contains the
@@ -28,8 +27,59 @@ export default function App() {
 
   return (
     <>
-      <AddTodo onAddTodo={handleAddTodo}/>
-      <TaskList todos={todos} />
+      <AddTodo onAddTodo={handleAddTodo} />
+      <ul>
+        {todos.map(todo => (
+          <li key={todo.id}>
+            {todo.title}
+            {/* Add a space */}
+            {' '}
+            <button onClick={() => {
+              // The filter() method creates a new array filled with
+              // elements that pass a test provided by a function.
+              // Use filter() instead of splice() to avoid mutating
+              // the original array.
+              // setTodos(todos.filter((t) => t.id !== todoId))
+              setTodos(
+                todos.filter((t) => {
+                  return t.id !== todo.id;
+                })
+              );
+            }}>
+              Delete
+            </button>
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
+// ********************** components **********************
+
+
+function AddTodo({ onAddTodo }) {
+  const [title, setTitle] = useState('');
+
+  return (
+    <>
+      <input
+        placeholder="Add todo"
+        value={title}
+        // The target event property returns the element
+        // that triggered the event.
+        onChange={(event) => setTitle(event.target.value)}
+      />
+      <button
+        onClick={
+          () => {
+            setTitle(''); // clear input
+            onAddTodo(title);
+          }
+        }
+      >
+        Add
+      </button>
     </>
   );
 }
