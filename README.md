@@ -5,6 +5,7 @@ A simple to-do app with create, read, update and delete operations, built with R
 ## Run locally
 
 ```bash
+$ npm install
 $ npm start
 ```
 
