@@ -64,62 +64,74 @@ export default function App() {
 // ********************** components **********************
 
 function TaskList({ todos, onDeleteTodo, onChangeTodo }) {
+  
+  return (
+    <ul>
+      {/* {todos.map(todo => ( */}
+      {todos.map(
+        (todo) => {
+          return (
+            <li key={todo.id}>
+              <Task
+                todo={todo}
+                onDelete={onDeleteTodo}
+                onChange={onChangeTodo}
+              />
+            </li>
+          );
+        }
+      )}
+    </ul>
+  )
+}
+
+function Task({ todo, onDelete, onChange }) {
   const [isEditing, setIsEditing] = useState(false);
+  let todoContent;
 
   if (isEditing) {
-    return (
-      <ul>
-        {todos.map(todo => (
-          <li key={todo.id}>
-            <input
-              value={todo.title}
-              onChange={
-                (event) => {
-                  onChangeTodo({
-                    // Make a copy.
-                    ...todo,
-                    // The target event property returns the element
-                    // that triggered the event.
-                    title: event.target.value
-                  });
-                }
-              }
-            />
-
-            <button onClick={() => setIsEditing(false)}>
-              Save
-            </button>
-            
-            <button onClick={() => {
-              onDeleteTodo(todo.id)
-            }}>
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+    todoContent = (
+      <>
+        <input
+          value={todo.title}
+          onChange={
+            (event) => {
+              onChange({
+                // Make a copy.
+                ...todo,
+                // The target event property returns the element
+                // that triggered the event.
+                title: event.target.value
+              });
+            }
+          }
+        />
+        <button onClick={() => setIsEditing(false)}>
+          Save
+        </button>
+      </>
     );
   } else {
-    return (
-      <ul>
-        {todos.map(todo => (
-          <li key={todo.id}>
-            {todo.title}
-
-            <button onClick={() => setIsEditing(true)}>
-              Edit
-            </button>
-            
-            <button onClick={() => {
-              onDeleteTodo(todo.id)
-            }}>
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+    todoContent = (
+      <>
+        {todo.title}
+        <button onClick={() => setIsEditing(true)}>
+          Edit
+        </button>
+      </>
     );
   }
+
+  return (
+    <>
+      {todoContent}
+      <button onClick={() => {
+        onDelete(todo.id)
+      }}>
+        Delete
+      </button>
+    </>
+  )
 }
 
 function AddTodo({ onAddTodo }) {
