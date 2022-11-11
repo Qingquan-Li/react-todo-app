@@ -25,38 +25,102 @@ export default function App() {
     ]);
   }
 
+  function handleDeleteTodo(todoID) {
+    // The filter() method creates a new array filled with
+    // elements that pass a test provided by a function.
+    // Use filter() instead of splice() to avoid mutating
+    // the original array.
+    // setTodos(todos.filter((t) => t.id !== todoId))
+    setTodos(
+      todos.filter((t) => {
+        return t.id !== todoID;
+      })
+    );
+  }
+
+  function handleChangeTodo(nextTodo) {
+    setTodos(todos.map(t => {
+      if (t.id === nextTodo.id) {
+        return nextTodo;
+      } else {
+        // No changes
+        return t;
+      }
+    }));
+  }
+
   return (
     <>
       <AddTodo onAddTodo={handleAddTodo} />
-      <ul>
-        {todos.map(todo => (
-          <li key={todo.id}>
-            {todo.title}
-            {/* Add a space */}
-            {' '}
-            <button onClick={() => {
-              // The filter() method creates a new array filled with
-              // elements that pass a test provided by a function.
-              // Use filter() instead of splice() to avoid mutating
-              // the original array.
-              // setTodos(todos.filter((t) => t.id !== todoId))
-              setTodos(
-                todos.filter((t) => {
-                  return t.id !== todo.id;
-                })
-              );
-            }}>
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+      <TaskList
+        todos={todos}
+        onDeleteTodo={handleDeleteTodo}
+        onChangeTodo={handleChangeTodo}
+      />
     </>
   );
 }
 
 // ********************** components **********************
 
+function TaskList({ todos, onDeleteTodo, onChangeTodo }) {
+  const [isEditing, setIsEditing] = useState(false);
+
+  if (isEditing) {
+    return (
+      <ul>
+        {todos.map(todo => (
+          <li key={todo.id}>
+            <input
+              value={todo.title}
+              onChange={
+                (event) => {
+                  onChangeTodo({
+                    // Make a copy.
+                    ...todo,
+                    // The target event property returns the element
+                    // that triggered the event.
+                    title: event.target.value
+                  });
+                }
+              }
+            />
+
+            <button onClick={() => setIsEditing(false)}>
+              Save
+            </button>
+            
+            <button onClick={() => {
+              onDeleteTodo(todo.id)
+            }}>
+              Delete
+            </button>
+          </li>
+        ))}
+      </ul>
+    );
+  } else {
+    return (
+      <ul>
+        {todos.map(todo => (
+          <li key={todo.id}>
+            {todo.title}
+
+            <button onClick={() => setIsEditing(true)}>
+              Edit
+            </button>
+            
+            <button onClick={() => {
+              onDeleteTodo(todo.id)
+            }}>
+              Delete
+            </button>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+}
 
 function AddTodo({ onAddTodo }) {
   const [title, setTitle] = useState('');
